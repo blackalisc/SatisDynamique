@@ -7,45 +7,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Silex\Application;
-use Silex\ControllerProviderInterface;
 
 /**
  *
  * @author valérian Girard <valerian.girard@educagri.fr>
  */
-class SatisController implements ControllerProviderInterface
-{
-    /**
-     * Connect function is used by Silex to mount the controller to the application.
-     * Please list all routes inside here.
-     *
-     * @param Application $app Silex Application Object.
-     * @return Response Silex Response Object.
-     */
-    public function connect(Application $app)
-    {
-        /**
-         * @var \Silex\ControllerCollection $factory
-         */
-        $factory = $app['controllers_factory'];
-
-        $factory->get('/', 'Cnerta\Controller\SatisController::getHelp');
-        
-        $factory->get('/pakages', 'Cnerta\Controller\SatisController::getAllPakage');
-
-        $factory->post('/pakage', 'Cnerta\Controller\SatisController::postPakage');
-        
-        $factory->delete('/pakage', 'Cnerta\Controller\SatisController::deletePakage');
-        
-        $factory->get('/repositories', 'Cnerta\Controller\SatisController::getAllRepositories');
-        
-        $factory->post('/repository', 'Cnerta\Controller\SatisController::postRepository');
-        
-        $factory->delete('/repository', 'Cnerta\Controller\SatisController::deleteRepository');
-        
-        return $factory;
-    }
-    
+class SatisController
+{   
     public function getHelp(Application $app)
     {
         return json_encode("hello");

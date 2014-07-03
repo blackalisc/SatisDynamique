@@ -1,0 +1,29 @@
+getAllPakage:
+    path: /pakages
+    defaults: { _controller: 'Cnerta\Controller\SatisController::getAllPakage' }
+    methods:  [GET]
+    
+postPakage:
+    path: /pakage
+    defaults: { _controller: 'Cnerta\Controller\SatisController::postPakage' }
+    methods:  [POST]
+    
+deletePakage:
+    path: /pakage
+    defaults: { _controller: 'Cnerta\Controller\SatisController::deletePakage' }
+    methods:  [DELETE]
+    
+getAllRepositories:
+    path: /repositories
+    defaults: { _controller: 'Cnerta\Controller\SatisController::getAllRepositories' }
+    methods:  [GET]
+    
+postRepository:
+    path: /repository
+    defaults: { _controller: 'Cnerta\Controller\SatisController::postRepository' }
+    methods:  [POST]
+    
+deleteRepository:
+    path: /repository
+    defaults: { _controller: 'Cnerta\Controller\SatisController::deleteRepository' }
+    methods:  [DELETE]
