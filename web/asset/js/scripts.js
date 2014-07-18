@@ -22454,9 +22454,40 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     SatisDynamique.allPakage().get().$promise.then(function(p){
         $scope.packages = p.packages;
     });
-    
-    $scope.updatePackage = function(package) {        
-        SatisDynamique.postPakage().save({package:{old:$scope.currentPackageEdited, new:package}});
+        
+    $scope.updatePackage = function(newPackage, oldPackage) {
+        
+        return SatisDynamique.postPakage()
+                .save({package:{old:oldPackage, new:newPackage}})
+                .$promise.then(function(p){
+                    console.log("Success");
+                },function(data, status, headers, config) {
+                    console.log("Fail");
+                    return false;
+                });
+        ;
+//        SatisDynamique.postPakage()
+//                .save({package:{old:oldPackage, new:newPackage}}, 
+//                function(data, status, headers, config) {
+//                    console.log("success");
+//
+//                    // this callback will be called asynchronously
+//                    // when the response is available
+//                  },
+//                function(data, status, headers, config) {
+//                    
+//                    console.log(newPackage);
+//                    console.log(oldPackage);
+//                    console.log(data);
+//                    console.log("error");
+//                    newPackage = oldPackage;
+//                    // called asynchronously if an error occurs
+//                    // or server returns response with an error status.
+//                    
+//                    return false;
+//                  });
+                  
+        return true;
     };
     
     $scope.onCancelEdit = function() {

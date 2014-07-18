@@ -43,7 +43,7 @@
                         <a href="#" title="Click to edit" ng-click="rowform.$show()" e-form="rowform" editable-text="package.version" e-name="version" e-required>{{ package.version }}</a>
                     </div>
                     <div class="col-md-2" ng-show="rowform.$visible">
-                      <form editable-form name="rowform" onbeforesave="saveUser($data, user.id)" class="form-buttons form-inline">
+                      <form editable-form name="rowform" onbeforesave="updatePackage($data, package)" class="form-buttons form-inline">
                         <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">Save</button>
                         <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">Cancel</button>
                       </form>
