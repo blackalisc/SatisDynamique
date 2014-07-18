@@ -13,34 +13,58 @@ use Silex\Application;
  * @author valérian Girard <valerian.girard@educagri.fr>
  */
 class SatisController
-{   
-    public function getHelp(Application $app)
-    {
-        return json_encode("hello");
-    }
-    
+{     
     public function getAllPakage(Application $app)
     {
         return new JsonResponse($app['sd.service.satis.manager']->getPackages());
     }
     
     public function postPakage(Application $app, Request $request)
-    {
-        $name = $request->get("name");
-        $version = $request->get("version");
-        try {
-            return new JsonResponse($app['sd.service.satis.manager']->addPackage($name, $version), Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+    {       
+        $package = $request->request->get("package");
+
+        if (array_key_exists("old", $package)) {
+
+            try {
+                $app['sd.service.satis.manager']->removePackage($package['old']['name']);
+                
+                return new JsonResponse(
+                        $app['sd.service.satis.manager']
+                                ->addPackage(
+                                        $package['new']['name'], $package['new']['version']
+                                ), Response::HTTP_CREATED
+                );
+            } catch (\Exception $e) {
+                return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            }
+            
+        } elseif (array_key_exists("name", $package) && array_key_exists("version", $package)) {
+
+            try {
+
+                return new JsonResponse(
+                        $app['sd.service.satis.manager']
+                                ->addPackage(
+                                        $package['name'], $package['version']
+                                ), Response::HTTP_CREATED
+                );
+            } catch (\Exception $e) {
+                return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+            }
         }
     }
-    
+
     public function deletePakage(Application $app, Request $request)
     {
-        $name = $request->get("name");
+        
+        $package = json_decode($request->query->get("package"), true);
+        
+        if (!array_key_exists("name", $package)) {
+            return new JsonResponse("No package name found", Response::HTTP_BAD_REQUEST);
+        }
 
         try {
-            return new JsonResponse($app['sd.service.satis.manager']->removePackage($name), Response::HTTP_CREATED);
+            return new JsonResponse($app['sd.service.satis.manager']->removePackage($package['name']), Response::HTTP_CREATED);
         } catch (NotFoundHttpException $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
@@ -76,5 +100,4 @@ class SatisController
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
-    
 }

@@ -3,3 +3,5 @@
 /old_satis_conf/*
 /composer.lock
 /composer_satis.json
+/config.php
+/cache/

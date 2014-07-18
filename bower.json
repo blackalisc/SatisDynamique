@@ -1,0 +1,10 @@
+{
+    "name": "MyProject",
+    "dependencies": {
+        "angular": "~1.2",
+        "angular-resource": "~1.2",
+        "bootstrap": "~3.2",
+        "angular-bootstrap": "~0.11",
+        "angular-xeditable": "~0.1"
+    }
+}

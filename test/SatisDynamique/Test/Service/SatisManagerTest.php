@@ -16,6 +16,8 @@ class SatisManagerTest extends WebTestCase
         parent::setUp();
         $fs = new \Symfony\Component\Filesystem\Filesystem();
         $fs->copy(__DIR__ . "/../../Needs/composer_satis.json", __DIR__ . "/../../tmp/composer_satis.json");
+        
+        parent::setUp();
     }
     
     public function tearDown()
@@ -59,28 +61,42 @@ class SatisManagerTest extends WebTestCase
         
         $content = json_decode($client->getResponse()->getContent(), true);
         
-        $this->assertTrue(isset($content["symfony/symfony"]));
+        $this->assertTrue(isset($content['packages'][0]["name"]));
+        $this->assertEquals("symfony/symfony", $content['packages'][0]["name"]);
     }
     
     public function testShouldPostPackage()
     {
         $client = $this->createClient();
-        
-        $client->request('POST', '/pakage', array('name' => "dummy/package", "version" => "1.0.1"));
-        
+                
+        $json = array(
+            "package" => array(
+                'name' => "dummy/package", "version" => "1.0.1"
+                )
+            );
+
+        $client->request('POST', '/pakage', $json);
         $client->request('GET', '/pakages');
-        $content = json_decode($client->getResponse()->getContent(), true);
         
-        $this->assertTrue(isset($content["dummy/package"]));
-        $this->assertEquals("1.0.1", $content["dummy/package"]);
+        $content = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertTrue(isset($content['packages'][11]["name"]));
+        $this->assertEquals("dummy/package", $content['packages'][11]["name"]);
+        $this->assertEquals("1.0.1", $content['packages'][11]["version"]);
     }
     
     public function testShouldFailAtPostPackage()
     {
         $client = $this->createClient();
         
-        $client->request('POST', '/pakage', array('name' => "doctrine/doctrine-bundle", "version" => "~1.2"));
-     
+        $json = array(
+            "package" => array(
+                'name' => "doctrine/doctrine-bundle", "version" => "~1.2"
+                )
+            );
+        
+        $client->request('POST', '/pakage', $json);
+
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertEquals('"This package already exist doctrine\/doctrine-bundle"', $client->getResponse()->getContent());
     }
@@ -116,8 +132,8 @@ class SatisManagerTest extends WebTestCase
         
         $content = json_decode($client->getResponse()->getContent(), true);
         
-        $this->assertTrue(isset($content[0]["type"]));
-        $this->assertEquals("composer", $content[0]["type"]);
+        $this->assertTrue(isset($content['repositories'][0]["type"]));
+        $this->assertEquals("composer", $content['repositories'][0]["type"]);
     }
     
     public function testShouldPostRepository()
@@ -129,9 +145,9 @@ class SatisManagerTest extends WebTestCase
         $client->request('GET', '/repositories');
         $content = json_decode($client->getResponse()->getContent(), true);
         
-        $this->assertTrue(isset($content[2]["type"]));
-        $this->assertEquals("git", $content[2]["type"]);
-        $this->assertEquals("http://172.0.0.1/laura", $content[2]["url"]);
+        $this->assertTrue(isset($content['repositories'][2]["type"]));
+        $this->assertEquals("git", $content['repositories'][2]["type"]);
+        $this->assertEquals("http://172.0.0.1/laura", $content['repositories'][2]["url"]);
     }
     
     public function testShouldFailAtPostRepository()

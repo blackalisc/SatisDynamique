@@ -40,14 +40,20 @@ class SatisManager
     {
         $this->prepareSatisConfig();
         
-        return $this->satisConfig['require'];
+        $packages = array();
+        
+        foreach($this->satisConfig['require'] as $name => $version) {
+            $packages[] = array("name" => $name, "version" => $version);
+        }
+        
+        return array("packages" => $packages);
     }
     
     public function getRepositories()
     {
         $this->prepareSatisConfig();
         
-        return $this->satisConfig['repositories'];
+        return array("repositories" => $this->satisConfig['repositories']);
     }
     
     public function addPackage($name, $version)

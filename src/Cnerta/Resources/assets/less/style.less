@@ -1,0 +1,35 @@
+@import "../../../../../vendor/web/bootstrap/less/bootstrap.less";
+
+@icon-font-path:        "../../fonts/";
+
+@font-face {
+  font-family: 'Josefin Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Josefin Sans SemiBold'), local('JosefinSans-SemiBold'), url(http://themes.googleusercontent.com/static/fonts/josefinsans/v5/C6HYlRF50SGJq1XyXj04z9Od4RnLmtUrdSQkDmC5b8k.woff) format('woff');
+}
+header[role="banner"] {
+    background-color: #3D73BF;
+    h1 {
+        color: #fff;
+        font-variant: small-caps;
+        font-family: 'Josefin Sans';
+    }
+}
+
+a[editable-text] {
+    border-bottom: 1px dashed #428bca;
+    text-decoration: none;
+    line-height: 34px;
+}
+
+.packages {
+    div[ng-repeat]:hover {
+        background-color: #80B1DA;
+        .transition(background-color 250ms linear);
+        a {
+            color: #fff;
+            border-bottom: 1px dashed #fff;
+        }
+    }
+}

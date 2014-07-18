@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html ng-app="satisdynamique">
+    <head lang="en">
+        <title>Satis Dynamique By CNERTA</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="asset/css/styles.css" media="all" rel="stylesheet" type="text/css" />
+    </head>
+    <body ng-controller="SatisDynamiqueCtrl">
+        <header role="banner" id="top" class="navbar navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <h1>Satis Dynamique</h1>
+                </div>
+
+            </div>
+        </header>
+        
+        <div class="container">
+            
+            <!-- <div class="packages">
+                <h2>Packages &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewPackage()"><i class="glyphicon glyphicon-plus"></i></button></h2>
+                <div ng-repeat="package in packages" class="row">
+                    <div class="col-md-6">
+                        <a href="#" title="Click to edit" editable-text="package.name" onaftersave="updatePackage(package)" onshow="onShowEdit(package)" oncancel="onCancelEdit()" onhide="onCancelEdit()">{{ package.name }}</a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="#" title="Click to edit" editable-text="package.version" onaftersave="updatePackage(package)" onshow="onShowEdit(package)" oncancel="onCancelEdit()" onhide="onCancelEdit()">{{ package.version }}</a>
+                    </div>
+                    <div class="col-md-2">
+                        <button title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
+                    </div>
+                </div>
+            </div> -->
+            
+            <div class="packages">
+                <h2>Packages &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewPackage()"><i class="glyphicon glyphicon-plus"></i></button></h2>
+                <div ng-repeat="package in packages" class="row">
+                    <div class="col-md-5">
+                        <a href="#" title="Click to edit" ng-click="rowform.$show()" e-form="rowform" editable-text="package.name" e-name="name" e-required>{{ package.name }}</a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="#" title="Click to edit" ng-click="rowform.$show()" e-form="rowform" editable-text="package.version" e-name="version" e-required>{{ package.version }}</a>
+                    </div>
+                    <div class="col-md-2" ng-show="rowform.$visible">
+                      <form editable-form name="rowform" onbeforesave="saveUser($data, user.id)" class="form-buttons form-inline">
+                        <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">Save</button>
+                        <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">Cancel</button>
+                      </form>
+                    </div>
+                    <div class="col-md-2" ng-hide="rowform.$visible">
+                        <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+                        <button title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
+                    </div>
+                </div>
+            </div>
+            
+           
+            
+            
+        </div>
+        <script async src="asset/js/scripts.js"></script>
+        <script type="text/ng-template" id="removeModal.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Remove : Are you sure ?</h3>
+        </div>
+        <div class="modal-body">
+            Did you really, really want to remove this "{{ item.name }}" ?
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="ok()">Yes, I want</button>
+            <button class="btn btn-warning" ng-click="cancel()">NO</button>
+        </div>
+        </script>
+    </body>
+</html>
