@@ -22532,6 +22532,10 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         });
     };
     
+    
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
 });
 
 var ModalInstanceCtrl = function($scope, $modalInstance, index, package) {
