@@ -52,13 +52,15 @@ class SatisController
                 return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
             }
         }
+        
+        return new JsonResponse("We don't understand your request.", Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function deletePakage(Application $app, Request $request)
     {
         
         $package = json_decode($request->query->get("package"), true);
-        
+
         if (!array_key_exists("name", $package)) {
             return new JsonResponse("No package name found", Response::HTTP_BAD_REQUEST);
         }
@@ -70,6 +72,8 @@ class SatisController
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
+        return new JsonResponse("We don't understand your request.", Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function getAllRepositories(Application $app)
@@ -86,6 +90,8 @@ class SatisController
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
+        return new JsonResponse("We don't understand your request.", Response::HTTP_UNPROCESSABLE_ENTITY);
     }
     
     public function deleteRepository(Application $app, Request $request)
@@ -99,5 +105,7 @@ class SatisController
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+        
+        return new JsonResponse("We don't understand your request.", Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

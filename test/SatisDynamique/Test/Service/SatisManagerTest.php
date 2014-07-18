@@ -75,11 +75,11 @@ class SatisManagerTest extends WebTestCase
                 )
             );
 
-        $client->request('POST', '/pakage', $json);
+        $client->request('POST', '/pakage', $json);        
         $client->request('GET', '/pakages');
         
         $content = json_decode($client->getResponse()->getContent(), true);
-
+        
         $this->assertTrue(isset($content['packages'][11]["name"]));
         $this->assertEquals("dummy/package", $content['packages'][11]["name"]);
         $this->assertEquals("1.0.1", $content['packages'][11]["version"]);
@@ -105,7 +105,7 @@ class SatisManagerTest extends WebTestCase
     {
         $client = $this->createClient();
         
-        $client->request('DELETE', '/pakage', array('name' => "sensio/framework-extra-bundle"));
+        $client->request('DELETE', '/pakage?package=' .  json_encode(array('name' => "sensio/framework-extra-bundle")));
         
         $client->request('GET', '/pakages');
         $content = json_decode($client->getResponse()->getContent(), true);
@@ -116,8 +116,8 @@ class SatisManagerTest extends WebTestCase
     public function testShouldNotDeletePackage()
     {
         $client = $this->createClient();
-        
-        $client->request('DELETE', '/pakage', array('name' => "dummy/package"));
+
+        $client->request('DELETE', '/pakage?package=' .  json_encode(array('name' => "dummy/package")));
         
         $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }

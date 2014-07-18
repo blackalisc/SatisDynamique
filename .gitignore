@@ -1,7 +1,9 @@
 /nbproject/*
 /vendor/*
 /old_satis_conf/*
+/web/asset/*
+/cache/*
 /composer.lock
 /composer_satis.json
 /config.php
-/cache/
+/composer.phar

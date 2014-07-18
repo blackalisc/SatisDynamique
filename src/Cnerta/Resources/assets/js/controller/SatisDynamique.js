@@ -8,44 +8,28 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     
     SatisDynamique.allPakage().get().$promise.then(function(p){
         $scope.packages = p.packages;
+    },function(data, status, headers, config) {
+        $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
     });
         
     $scope.updatePackage = function(newPackage, oldPackage) {
         
+        if(oldPackage.name == "" && oldPackage.version == "") {
+            var package = {package:newPackage};
+        } else {
+            var package = {package:{old:oldPackage, new:newPackage}};
+        }
+        
         return SatisDynamique.postPakage()
-                .save({package:{old:oldPackage, new:newPackage}})
-                .$promise.then(function(p){
-                    console.log("Success");
-                    $scope.alerts.push({type:'success', msg:'Data saved'});
-                },function(data, status, headers, config) {
-                    console.log(data.data);
-
-                    $scope.alerts.push({type:'danger', msg:data.data});
+                .save(package)
+                .$promise.then(function(){
+                    $scope.alerts.push({type:'success', msg:'The package have been well saved'});
+                    return true;
+                }, function(data, status, headers, config) {                    
+                    $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
                     return false;
                 });
         ;
-//        SatisDynamique.postPakage()
-//                .save({package:{old:oldPackage, new:newPackage}}, 
-//                function(data, status, headers, config) {
-//                    console.log("success");
-//
-//                    // this callback will be called asynchronously
-//                    // when the response is available
-//                  },
-//                function(data, status, headers, config) {
-//                    
-//                    console.log(newPackage);
-//                    console.log(oldPackage);
-//                    console.log(data);
-//                    console.log("error");
-//                    newPackage = oldPackage;
-//                    // called asynchronously if an error occurs
-//                    // or server returns response with an error status.
-//                    
-//                    return false;
-//                  });
-                  
-        return true;
     };
     
     $scope.onCancelEdit = function() {
@@ -57,7 +41,11 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     };
     
     $scope.addNewPackage = function() {
-        $scope.packages.unshift({name: "New package", version: "*"});
+        $scope.inserted = {
+            name: '',
+            version: ''
+        };
+        $scope.packages.unshift($scope.inserted);        
     };
     
 
@@ -79,7 +67,16 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         modalInstance.result.then(function(index) {
             if(index != undefined) {
                 $scope.packages.splice(index, 1);
-                SatisDynamique.postPakage().remove({package:package});
+                
+                SatisDynamique.postPakage().remove({package:package})
+                .$promise.then(function(p){
+                    $scope.alerts.push({type:'success', msg:'The package have been well removed'});
+                    return true;
+                }, function(data, status, headers, config) {                    
+                    $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
+                    return false;
+                });
+                
             }
         });
     };
