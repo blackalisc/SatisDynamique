@@ -3,8 +3,8 @@
 namespace Cnerta\Services;
 
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Process;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Cnerta\Services\Composer;
 
 /**
  *
@@ -12,6 +12,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class SatisManager
 {
+    /**
+     * @var \Cnerta\Services\Composer 
+     */
+    protected $composer;
+    
     protected $config;
     
     protected $satisConfig;
@@ -19,21 +24,10 @@ class SatisManager
     public static $repositoryType = array('composer', 'vcs', 'svn', 'git', 'hg', 'pear', 'package');
 
 
-    public function __construct($config)
+    public function __construct($config, Composer $composer)
     {
         $this->config = $config;
-    }
-
-    public function readComposerFile()
-    {
-        $fs = new Filesystem();
-        if(!$fs->exists($this->config['satis_package_conf_path'])) {
-            throw new \Exception("Composer json not found in " . $this->config['satis_package_conf_path']);
-        }
-        
-        $rawSatisConfig = file_get_contents($this->config['satis_package_conf_path']);
-        
-        $this->satisConfig = json_decode($rawSatisConfig, true);            
+        $this->composer = $composer;
     }
     
     public function getPackages()
@@ -68,7 +62,9 @@ class SatisManager
         
         $this->satisConfig['require'][$name] = $version;
         
-        $this->writeSatisConf();
+        $this->composer->validatePackage($this->satisConfig);
+        
+        $this->composer->writeSatisConf($this->satisConfig);
         
         return "ok";
     }
@@ -83,7 +79,7 @@ class SatisManager
         
         unset($this->satisConfig['require'][$name]);
                 
-        $this->writeSatisConf();
+        $this->composer->writeSatisConf($this->satisConfig);
         
         return "ok";
     }
@@ -112,7 +108,7 @@ class SatisManager
             "url" => $url
         );
         
-        $this->writeSatisConf();
+        $this->composer->writeSatisConf($this->satisConfig);
         
         return "ok";
     }
@@ -135,7 +131,7 @@ class SatisManager
                 
                 unset($this->satisConfig['repositories'][$key]);
                 
-                $this->writeSatisConf();
+                $this->composer->writeSatisConf($this->satisConfig);
                 
                 return "ok";
             }       
@@ -145,32 +141,10 @@ class SatisManager
     }
     
     
-    
-    private function writeSatisConf()
-    {
-        $satisConfPath = explode("/", $this->config['satis_package_conf_path']);
-        $satisConfName = array_pop($satisConfPath);
-        $satisConfPath = implode("/", $satisConfPath);
-        
-        $oldSatisConfPath = $satisConfPath . "/old_satis_conf/";
-        
-        $fs = new Filesystem();
-        $fs->mkdir($oldSatisConfPath);
-        
-        $dt = new \DateTime();
-        
-        $fs->copy(
-                $this->config['satis_package_conf_path'],
-                sprintf("%s%s-%s", $oldSatisConfPath, $dt->format("Y-m-d H-i-s"), $satisConfName)
-                );
-        
-        file_put_contents($this->config['satis_package_conf_path'], json_encode($this->satisConfig));
-    }
-    
     private function prepareSatisConfig()
     {
         if($this->satisConfig == null) {
-            $this->readComposerFile();
+            $this->satisConfig = $this->composer->readComposerFile();
         }
     }
 }

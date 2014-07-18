@@ -18,12 +18,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $app = new Silex\Application();
 $app['root_dir'] = __DIR__ . '/..';
 
-$config = array(
-    "satis_package_conf_path" => __DIR__ . "/composer_satis.json",
-    "satis_bin_path" => "",
-    "satis_html_path" => "",
-    "composer_phar_path" => __DIR__ . "/../Composer/composer.phar",
-);
+require_once  __DIR__ . '/../config.php';
 
 require __DIR__ . '/../src/Cnerta/app.php';
 

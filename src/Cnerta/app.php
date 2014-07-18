@@ -19,7 +19,9 @@ $app->before(function (Request $request) {
     }
 });
 
-$app['sd.service.satis.manager'] = function($app) { return new \Cnerta\Services\SatisManager($app['sd.conf']); };
+$app['sd.service.composer'] = function($app) { return new \Cnerta\Services\Composer($app['sd.conf']); };
+$app['sd.service.satis.manager'] = function($app) { return new \Cnerta\Services\SatisManager($app['sd.conf'], $app['sd.service.composer']); };
+
 
 $app['routes'] = $app->extend(
         'routes',
