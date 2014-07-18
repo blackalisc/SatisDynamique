@@ -22449,6 +22449,9 @@ app.factory('SatisDynamique', ['$resource',
 app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     
     $scope.packages = [];
+    $scope.alerts = [];
+    
+    // @deprecated
     $scope.currentPackageEdited = [];
     
     SatisDynamique.allPakage().get().$promise.then(function(p){
@@ -22461,8 +22464,11 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
                 .save({package:{old:oldPackage, new:newPackage}})
                 .$promise.then(function(p){
                     console.log("Success");
+                    $scope.alerts.push({type:'success', msg:'Data saved'});
                 },function(data, status, headers, config) {
-                    console.log("Fail");
+                    console.log(data.data);
+
+                    $scope.alerts.push({type:'danger', msg:data.data});
                     return false;
                 });
         ;
