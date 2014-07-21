@@ -15,12 +15,15 @@ class Composer {
 
     public function __construct($config) {
         $this->config = $config;
-        $this->config['composer_cache_path'] = $config['cache_path'] . "/composer/";
+        $this->config['composer_cache_path'] = $config['temp_path'] . "/composer";
     }
 
     public function getComposer() {
-        $process = new Process(sprintf("cd %s && curl -sS https://getcomposer.org/installer | php", $this->config['cache_path']));
-        $process->run();
+        $fs = new Filesystem();
+        if(!$fs->exists($this->config['composer_cache_path'] . "/composer.phar")) {
+            $process = new Process(sprintf("cd %s && curl -sS https://getcomposer.org/installer | php", $this->config['composer_cache_path']));
+            $process->run();
+        }
     }
 
     public function readComposerFile() {
@@ -35,6 +38,7 @@ class Composer {
     }
 
     public function writeSatisConf($satisConfig) {
+                
         $satisConfPath = explode("/", $this->config['satis_package_conf_path']);
         $satisConfName = array_pop($satisConfPath);
         $satisConfPath = implode("/", $satisConfPath);
@@ -47,32 +51,43 @@ class Composer {
         $dt = new \DateTime();
 
         $fs->copy(
-                $this->config['satis_package_conf_path'], sprintf("%s%s-%s", $oldSatisConfPath, $dt->format("Y-m-d H-i-s"), $satisConfName)
+            $this->config['satis_package_conf_path'], sprintf("%s%s-%s", $oldSatisConfPath, $dt->format("Y-m-d H-i-s"), $satisConfName)
         );
 
         file_put_contents($this->config['satis_package_conf_path'], json_encode($satisConfig));
     }
 
-    public function validatePackage($satisConfig) {
+    public function validatePackage($packageName, $version = null)
+    {
         $this->mkdirComposerFolder();
-
-        $composerJson = sprintf("%s/composer.json", $this->config['composer_cache_path']);
-
-        file_put_contents($composerJson, json_encode($satisConfig));
-
-        $process = new Process(sprintf("php %s/composer.phar validate", $this->config['composer_cache_path']));
-
+                
+        $process = new Process(sprintf("cd %s && php composer.phar show --name-only %s %s", $this->config['composer_cache_path'], $packageName, $version));
+        $process->setEnv(array("COMPOSER_HOME" => $this->config['composer_cache_path'] . "/.composer"));
         $process->run();
-//
-//        print_r($process->getOutput());
-//        echo "\n";exit;
+
+        if($process->isSuccessful()) {
+            return true;
+        }
+        
+        throw new \ErrorException(sprintf("%s\nFail to write composer.json", $this->cleanProcesssOutput($process)));
     }
 
     private function mkdirComposerFolder() {
         $fs = new Filesystem();
         if (!$fs->exists($this->config['composer_cache_path'])) {
             $fs->mkdir($this->config['composer_cache_path']);
+            $fs->mkdir($this->config['composer_cache_path'] . "/.composer");
+            $this->getComposer();
         }
     }
-
+    
+    private function cleanProcesssOutput(Process $process)
+    {
+        $output = trim($process->getErrorOutput());
+        
+//        $output = preg_replace( '/\s+/', ' ', $output );
+//        $output = preg_replace( "/\n+/", "n", $output );
+        
+        return $output;
+    }
 }

@@ -17,7 +17,7 @@
         </header>
         
         <div class="container">
-            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+            <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" style="white-space: pre;">{{alert.msg}}</alert>
             
             <div class="packages">
                 <h2>Packages &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewPackage();"><i class="glyphicon glyphicon-plus"></i></button></h2>

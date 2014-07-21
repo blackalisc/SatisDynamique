@@ -4,8 +4,9 @@
 //////////////////////// Configuration ASSETIC /////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+
 $app['assetic.enabled'] = true;
-$app['assetic.path_to_cache'] = $app['root_dir'] . '/cache' ;
+$app['assetic.path_to_cache'] = $config['cache_path'] ;
 $app['assetic.path_to_web'] = $app['root_dir'] . '/web/asset';
 $app['assetic.input.path_to_assets'] = $app['root_dir'] . '/src/Cnerta/Resources/assets';
 

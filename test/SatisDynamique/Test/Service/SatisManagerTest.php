@@ -32,6 +32,7 @@ class SatisManagerTest extends WebTestCase
         $config = array(
             "satis_package_conf_path" => __DIR__ . "/../../tmp/composer_satis.json",
             "cache_path" => __DIR__ . "/../../tmp/cache",
+            "temp_path" => __DIR__ . "/../../temp",
             "satis_bin_path" => "",
             "satis_html_path" => "",
         );
@@ -76,7 +77,8 @@ class SatisManagerTest extends WebTestCase
                 )
             );
 
-        $client->request('POST', '/pakage', $json);        
+        $client->request('POST', '/pakage', $json); 
+
         $client->request('GET', '/pakages');
         
         $content = json_decode($client->getResponse()->getContent(), true);

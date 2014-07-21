@@ -60,13 +60,16 @@ class SatisManager
              throw new \Exception(sprintf("This package already exist %s", $name));
         }
         
-        $this->satisConfig['require'][$name] = $version;
+        if($this->composer->validatePackage($name, $version)) {
         
-        $this->composer->validatePackage($this->satisConfig);
+            $this->satisConfig['require'][$name] = $version;
+
+            $this->composer->writeSatisConf($this->satisConfig);
+
+            return "ok";
+        }
         
-        $this->composer->writeSatisConf($this->satisConfig);
-        
-        return "ok";
+        return "ko";
     }
     
     public function removePackage($name)

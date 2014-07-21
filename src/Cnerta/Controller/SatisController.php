@@ -26,8 +26,6 @@ class SatisController
         if (array_key_exists("old", $package)) {
 
             try {
-                $app['sd.service.satis.manager']->removePackage($package['old']['name']);
-                
                 return new JsonResponse(
                         $app['sd.service.satis.manager']
                                 ->addPackage(
