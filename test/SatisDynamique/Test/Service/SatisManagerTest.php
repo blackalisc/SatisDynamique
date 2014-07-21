@@ -73,7 +73,7 @@ class SatisManagerTest extends WebTestCase
                 
         $json = array(
             "package" => array(
-                'name' => "dummy/package", "version" => "1.0.1"
+                'name' => "cnerta/breadcrumb-bundle", "version" => "~1.0"
                 )
             );
 
@@ -84,8 +84,8 @@ class SatisManagerTest extends WebTestCase
         $content = json_decode($client->getResponse()->getContent(), true);
         
         $this->assertTrue(isset($content['packages'][11]["name"]));
-        $this->assertEquals("dummy/package", $content['packages'][11]["name"]);
-        $this->assertEquals("1.0.1", $content['packages'][11]["version"]);
+        $this->assertEquals("cnerta/breadcrumb-bundle", $content['packages'][11]["name"]);
+        $this->assertEquals("~1.0", $content['packages'][11]["version"]);
     }
     
     public function testShouldFailAtPostPackage()
