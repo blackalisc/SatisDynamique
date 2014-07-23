@@ -22,6 +22,7 @@ class Composer {
         $fs = new Filesystem();
         if(!$fs->exists($this->config['composer_cache_path'] . "/composer.phar")) {
             $process = new Process(sprintf("cd %s && curl -sS https://getcomposer.org/installer | php", $this->config['composer_cache_path']));
+            $process->setEnv($this->config["process_env"]);
             $process->run();
         }
     }
@@ -62,7 +63,7 @@ class Composer {
         $this->mkdirComposerFolder();
                 
         $process = new Process(sprintf("cd %s && php composer.phar show --name-only %s %s", $this->config['composer_cache_path'], $packageName, $version));
-        $process->setEnv(array("COMPOSER_HOME" => $this->config['composer_cache_path'] . "/.composer"));
+        $process->setEnv(array_merge(array("COMPOSER_HOME" => $this->config['composer_cache_path'] . "/.composer"), $this->config["process_env"]));
         $process->run();
 
         if($process->isSuccessful()) {

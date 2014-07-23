@@ -6,11 +6,15 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     // @deprecated
     $scope.currentPackageEdited = [];
     
-    SatisDynamique.allPakage().get().$promise.then(function(p){
-        $scope.packages = p.packages;
-    },function(data, status, headers, config) {
-        $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
-    });
+    $scope.loadPackage = function() {
+        SatisDynamique.allPakage().get().$promise.then(function(p){
+            $scope.packages = p.packages;
+        },function(data, status, headers, config) {
+            $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
+        });
+    }
+    
+    $scope.loadPackage();
         
     $scope.updatePackage = function(newPackage, oldPackage) {
         
@@ -24,6 +28,7 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
                 .save(package)
                 .$promise.then(function(){
                     $scope.alerts.push({type:'success', msg:'The package have been well saved'});
+                    $scope.loadPackage();
                     return true;
                 }, function(data, status, headers, config) {                    
                     $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});

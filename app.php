@@ -5,6 +5,8 @@
 require_once __DIR__.'/vendor/autoload.php';
 require_once __DIR__.'/config.php';
 
+Cnerta\Utils\Utils::setUpPorxyConfig($config);
+
 
 $app = new Silex\Application();
 $app['root_dir'] = __DIR__;
