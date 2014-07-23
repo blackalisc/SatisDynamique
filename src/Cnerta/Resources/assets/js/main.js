@@ -12,6 +12,12 @@ app.factory('SatisDynamique', ['$resource',
         },
         postPakage: function() {
             return $resource('http://localhost/SatisDynamique/pakage');
+        },
+        allRepositories: function() {
+            return $resource('http://localhost/SatisDynamique/repositories');
+        },
+        postRepository: function() {
+            return $resource('http://localhost/SatisDynamique/repository');
         }
     };
     return myService;

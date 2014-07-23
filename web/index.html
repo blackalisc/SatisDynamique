@@ -15,49 +15,99 @@
 
             </div>
         </header>
-        
+
+
         <div class="container">
             <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" style="white-space: pre;">{{alert.msg}}</alert>
             
-            <div class="packages">
-                <h2>Packages &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewPackage();"><i class="glyphicon glyphicon-plus"></i></button></h2>
+            <tabset>
                 
-                <div ng-repeat="package in packages" class="row">
-                    <div class="col-md-5">
-                        <a href="#" title="Click to edit" ng-click="rowform.$show()" e-form="rowform" editable-text="package.name" e-name="name" e-required>{{ package.name }}</a>
+                <tab heading="Repositories">
+                    <h2>Repository &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewRepository();"><i class="glyphicon glyphicon-plus"></i></button></h2>
+                    
+                    <div ng-repeat="repository in repositories" class="repository row">
+                        <form editable-form name="repoform" onbeforesave="updateRepository($data, repository)" shown="repositoryInserted == repository" class="form-buttons form-inline">
+                            <div class="col-md-10" ng-if="repository.type == 'git' || repository.type == 'vcs' || repository.type == 'hg' || repository.type == 'composer'">
+                                <a href="#" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" title="Click to edit" ng-click="repoform.$show()" >{{ repository.type }}</a>
+                                <a href="#" editable-text="repository.url" e-name="type" title="Click to edit" ng-click="repoform.$show()" >{{ repository.url }}</a>
+                            </div>
+                            <div class="col-md-10" ng-if="repository.type == 'package'">
+                                <label>Type</label> <a href="#" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" >{{ repository.type }}</a>
+                                <ul>
+                                    <li><label>name</label>: <a>{{ repository.package.name }}</a></li>
+                                    <li><label>version</label> <a>{{ repository.package.version }}</a></li>
+                                    <li ng-show="repository.package.source.url"><label>source</label>: 
+                                        <ul>
+                                            <li><label>url</label>: <a>{{ repository.package.source.url }}</a></li>
+                                            <li><label>type</label>: <a>{{ repository.package.source.type }}</a></li>
+                                            <li><label>reference</label> <a>{{ repository.package.source.reference }}</a></li>
+                                        </ul>
+                                    </li>
+                                    <li ng-show="repository.package.dist.url"><label>dist</label>:
+                                        <ul>
+                                            <li><label>url</label>: <a>{{ repository.package.dist.url }}</a></li>
+                                            <li><label>type</label>: <a>{{ repository.package.dist.type }}</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-2" ng-show="repoform.$visible">
+                                <button type="submit" ng-disabled="repoform.$waiting" class="btn btn-primary">Save</button>
+                                <button type="button" ng-disabled="repoform.$waiting" ng-click="repoform.$cancel()" class="btn btn-default">Cancel</button>
+                            </div>
+                        </form>
+                            <div class="col-md-2" ng-hide="repoform.$visible">
+                                <button class="btn btn-primary" ng-click="repoform.$show()">edit</button>
+                                <button title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
+                            </div>
+                        
+
                     </div>
-                    <div class="col-md-2">
-                        <a href="#" title="Click to edit" ng-click="rowform.$show()" e-form="rowform" editable-text="package.version" e-name="version" e-required>{{ package.version }}</a>
+                    
+                </tab>
+
+                <tab heading="Packages">
+                    <div class="packages">
+                        <h2>Packages &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewPackage();"><i class="glyphicon glyphicon-plus"></i></button></h2>
+
+                        <div ng-repeat="package in packages" class="row">
+                            <form editable-form name="rowform" onbeforesave="updatePackage($data, package)" shown="inserted == package" class="form-buttons form-inline">
+                                <div class="col-md-5">
+                                    <a href="#" title="Click to edit" ng-click="rowform.$show()" editable-text="package.name" e-name="name" e-required>{{ package.name }}</a>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="#" title="Click to edit" ng-click="rowform.$show()" editable-text="package.version" e-name="version" e-required>{{ package.version }}</a>
+                                </div>
+                                <div class="col-md-2" ng-show="rowform.$visible">
+                                    <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">Save</button>
+                                    <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">Cancel</button>
+                                </div>
+                                <div class="col-md-2" ng-hide="rowform.$visible">
+                                    <button type="button" class="btn btn-primary" ng-click="rowform.$show()">edit</button>
+                                    <button type="button" title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="col-md-2" ng-show="rowform.$visible">
-                      <form editable-form name="rowform" onbeforesave="updatePackage($data, package)" shown="inserted == package" class="form-buttons form-inline">
-                        <button type="submit" ng-disabled="rowform.$waiting" class="btn btn-primary">Save</button>
-                        <button type="button" ng-disabled="rowform.$waiting" ng-click="rowform.$cancel()" class="btn btn-default">Cancel</button>
-                      </form>
-                    </div>
-                    <div class="col-md-2" ng-hide="rowform.$visible">
-                        <button class="btn btn-primary" ng-click="rowform.$show()">edit</button>
-                        <button title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
-                    </div>
-                </div>
-            </div>
-            
-           
-            
-            
+                </tab>
+                
+                <tab heading="All packages infos">Under construction</tab>
+            </tabset>  
+
+
         </div>
         <script async src="asset/js/scripts.js"></script>
         <script type="text/ng-template" id="removeModal.html">
-        <div class="modal-header">
+            <div class="modal-header">
             <h3 class="modal-title">Remove : Are you sure ?</h3>
-        </div>
-        <div class="modal-body">
+            </div>
+            <div class="modal-body">
             Did you really, really want to remove this "{{ item.name }}" ?
-        </div>
-        <div class="modal-footer">
+            </div>
+            <div class="modal-footer">
             <button class="btn btn-primary" ng-click="ok()">Yes, I want</button>
             <button class="btn btn-warning" ng-click="cancel()">NO</button>
-        </div>
+            </div>
         </script>
     </body>
 </html>

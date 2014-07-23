@@ -1,10 +1,16 @@
 app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     
     $scope.packages = [];
+    $scope.repositories = [];
     $scope.alerts = [];
-    
-    // @deprecated
-    $scope.currentPackageEdited = [];
+    $scope.repositoryType = [
+        {value: "package", text: 'package'},
+        {value: "git", text: 'git'},
+        {value: 'vcs', text: 'vcs'},
+        {value: 'hg', text: 'hg'},
+        {value: 'composer', text: 'composer'}
+    ];
+    $scope.repositoryInserted = [];
     
     $scope.loadPackage = function() {
         SatisDynamique.allPakage().get().$promise.then(function(p){
@@ -14,7 +20,16 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         });
     }
     
+    $scope.loadRepositories = function() {
+        SatisDynamique.allRepositories().get().$promise.then(function(p){
+            $scope.repositories = p.repositories;
+        },function(data, status, headers, config) {
+            $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
+        });
+    }
+    
     $scope.loadPackage();
+    $scope.loadRepositories();
         
     $scope.updatePackage = function(newPackage, oldPackage) {
         
@@ -34,17 +49,8 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
                     $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
                     return false;
                 });
-        ;
     };
-    
-    $scope.onCancelEdit = function() {
-        $scope.currentPackageEdited = null;
-    };
-    
-    $scope.onShowEdit = function(package) {
-        $scope.currentPackageEdited = {name: package.name, version: package.version};
-    };
-    
+
     $scope.addNewPackage = function() {
         $scope.inserted = {
             name: '',
@@ -52,7 +58,6 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         };
         $scope.packages.unshift($scope.inserted);        
     };
-    
 
     $scope.remove = function(index, package) {
 
@@ -86,6 +91,35 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         });
     };
     
+        
+    $scope.updateRepository = function(newRepository, oldRepository) {
+        
+//        if(oldPackage.name == "" && oldPackage.version == "") {
+//            var package = {package:newPackage};
+//        } else {
+//            var package = {package:{old:oldPackage, new:newPackage}};
+//        }
+//        
+//        return SatisDynamique.postPakage()
+//                .save(package)
+//                .$promise.then(function(){
+//                    $scope.alerts.push({type:'success', msg:'The package have been well saved'});
+//                    $scope.loadPackage();
+//                    return true;
+//                }, function(data, status, headers, config) {                    
+//                    $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
+//                    return false;
+//                });
+//        ;
+    };
+    
+    $scope.addNewRepository = function() {
+        $scope.repositoryInserted = {
+            type: 'git',
+            url: ''
+        };
+        $scope.repositories.unshift($scope.repositoryInserted);        
+    };
     
     $scope.closeAlert = function(index) {
         $scope.alerts.splice(index, 1);
