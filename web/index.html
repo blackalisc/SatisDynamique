@@ -26,27 +26,27 @@
                     <h2>Repository &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewRepository();"><i class="glyphicon glyphicon-plus"></i></button></h2>
                     
                     <div ng-repeat="repository in repositories" class="repository row">
-                        <form editable-form name="repoform" onbeforesave="updateRepository($data, repository)" shown="repositoryInserted == repository" class="form-buttons form-inline">
+                        <form editable-form name="repoform" onbeforesave="updateRepository($data, repository)" oncancel="cancelRepository(repository)" shown="repositoryInserted == repository" class="form-buttons form-inline">
                             <div class="col-md-10" ng-if="repository.type == 'git' || repository.type == 'vcs' || repository.type == 'hg' || repository.type == 'composer'">
-                                <a href="#" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" title="Click to edit" ng-click="repoform.$show()" >{{ repository.type }}</a>
-                                <a href="#" editable-text="repository.url" e-name="type" title="Click to edit" ng-click="repoform.$show()" >{{ repository.url }}</a>
+                                <a href="#" e-name="repository.type" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" title="Click to edit" ng-click="repoform.$show()" e-ng-change="changeRepositoryType($data, repository)">{{ repository.type }}</a>
+                                <a href="#" e-name="repository.url" editable-text="repository.url" title="Click to edit" ng-click="repoform.$show()">{{ repository.url }}</a>
                             </div>
                             <div class="col-md-10" ng-if="repository.type == 'package'">
-                                <label>Type</label> <a href="#" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" >{{ repository.type }}</a>
+                                <label>Type</label> <a href="#" e-name="repository.type" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" title="Click to edit" ng-click="repoform.$show()" e-ng-change="changeRepositoryType($data, repository)">{{ repository.type }}</a>
                                 <ul>
-                                    <li><label>name</label>: <a>{{ repository.package.name }}</a></li>
-                                    <li><label>version</label> <a>{{ repository.package.version }}</a></li>
-                                    <li ng-show="repository.package.source.url"><label>source</label>: 
+                                    <li><label>name</label>: <a href="#" e-name="repository.package.name" editable-text="repository.package.name" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.name }}</a></li>
+                                    <li><label>version</label> <a href="#" e-name="repository.package.version" editable-text="repository.package.version" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.version }}</a></li>
+                                    <li ng-show="repository.package.source.url || repoform.$visible"><label>source</label>: 
                                         <ul>
-                                            <li><label>url</label>: <a>{{ repository.package.source.url }}</a></li>
-                                            <li><label>type</label>: <a>{{ repository.package.source.type }}</a></li>
-                                            <li><label>reference</label> <a>{{ repository.package.source.reference }}</a></li>
+                                            <li><label>url</label>: <a href="#" e-name="repository.package.source.url" editable-text="repository.package.source.url" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.source.url }}</a></li>
+                                            <li><label>type</label>: <a href="#" e-name="repository.package.source.type" editable-text="repository.package.source.type" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.source.type }}</a></li>
+                                            <li><label>reference</label> <a href="#" e-name="repository.package.source.reference" editable-text="repository.package.source.reference" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.source.reference }}</a></li>
                                         </ul>
                                     </li>
-                                    <li ng-show="repository.package.dist.url"><label>dist</label>:
+                                    <li ng-show="repository.package.dist.url || repoform.$visible"><label>dist</label>:
                                         <ul>
-                                            <li><label>url</label>: <a>{{ repository.package.dist.url }}</a></li>
-                                            <li><label>type</label>: <a>{{ repository.package.dist.type }}</a></li>
+                                            <li><label>url</label>: <a href="#" e-name="repository.package.dist.url" editable-text="repository.package.dist.url" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.dist.url }}</a></li>
+                                            <li><label>type</label>: <a href="#" e-name="repository.package.dist.type" editable-text="repository.package.dist.type" title="Click to edit" ng-click="repoform.$show()">{{ repository.package.dist.type }}</a></li>
                                         </ul>
                                     </li>
                                 </ul>

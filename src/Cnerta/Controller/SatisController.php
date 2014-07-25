@@ -20,37 +20,26 @@ class SatisController
     }
     
     public function postPakage(Application $app, Request $request)
-    {       
+    {
         $package = $request->request->get("package");
 
         if (array_key_exists("old", $package)) {
-
-            try {
-                return new JsonResponse(
-                        $app['sd.service.satis.manager']
-                                ->addPackage(
-                                        $package['new']['name'], $package['new']['version']
-                                ), Response::HTTP_CREATED
-                );
-            } catch (\Exception $e) {
-                return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
-            }
-            
-        } elseif (array_key_exists("name", $package) && array_key_exists("version", $package)) {
-
-            try {
-
-                return new JsonResponse(
-                        $app['sd.service.satis.manager']
-                                ->addPackage(
-                                        $package['name'], $package['version']
-                                ), Response::HTTP_CREATED
-                );
-            } catch (\Exception $e) {
-                return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
-            }
+            $package = $package['new'];
+            // TODO check if we must or not, delete the old package
         }
-        
+
+        try {
+            return new JsonResponse(
+                    $app['sd.service.satis.manager']
+                            ->addPackage(
+                                    $package['name'], $package['version']
+                            ), Response::HTTP_CREATED
+            );
+        } catch (\Exception $e) {
+            return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
+        }
+
+
         return new JsonResponse("We don't understand your request.", Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
@@ -81,10 +70,15 @@ class SatisController
     
     public function postRepository(Application $app, Request $request)
     {
-        $type = $request->get("type");
-        $url = $request->get("url");
+        $repository = $request->request->get("repository");
+        
+        if (array_key_exists("old", $repository)) {
+            $repository = $repository['new'];
+            // TODO check if we must or not, delete the old repository
+        }
+        
         try {
-            return new JsonResponse($app['sd.service.satis.manager']->addRepository($type, $url), Response::HTTP_CREATED);
+            return new JsonResponse($app['sd.service.satis.manager']->addRepository($repository), Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
@@ -94,10 +88,10 @@ class SatisController
     
     public function deleteRepository(Application $app, Request $request)
     {
-        $type = $request->get("type");
-        $url = $request->get("url");
+        $repository = json_decode($request->query->get("repository"), true);
+
         try {
-            return new JsonResponse($app['sd.service.satis.manager']->removeRepository($type, $url), Response::HTTP_CREATED);
+            return new JsonResponse($app['sd.service.satis.manager']->removeRepository($repository['repository']), Response::HTTP_CREATED);
         } catch (NotFoundHttpException $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {

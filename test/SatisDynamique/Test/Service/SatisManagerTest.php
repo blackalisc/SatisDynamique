@@ -29,13 +29,8 @@ class SatisManagerTest extends WebTestCase
     
     public function createApplication()
     {
-        $config = array(
-            "satis_package_conf_path" => __DIR__ . "/../../tmp/composer_satis.json",
-            "cache_path" => __DIR__ . "/../../tmp/cache",
-            "temp_path" => __DIR__ . "/../../temp",
-            "satis_bin_path" => "",
-            "satis_html_path" => "",
-        );
+        require   __DIR__ .  "/../../Needs/config.php";
+        Cnerta\Utils\Utils::setUpPorxyConfig($config);
         
         // Silex
         $app = new Application();
@@ -139,35 +134,173 @@ class SatisManagerTest extends WebTestCase
         $this->assertEquals("composer", $content['repositories'][0]["type"]);
     }
     
-    public function testShouldPostRepository()
+    public function testShouldAddRepositorySimple()
     {
         $client = $this->createClient();
+
+        $repository = array (
+            "repository" => array (
+                    "type" => "git",
+                    "url" => "git@github.com:waldo2188/SatisDynamique.git"
+                )
+            );
         
-        $client->request('POST', '/repository', array('type' => "git", "url" => "http://172.0.0.1/laura"));
+        $client->request('POST', '/repository', $repository);
         
         $client->request('GET', '/repositories');
         $content = json_decode($client->getResponse()->getContent(), true);
         
-        $this->assertTrue(isset($content['repositories'][2]["type"]));
-        $this->assertEquals("git", $content['repositories'][2]["type"]);
-        $this->assertEquals("http://172.0.0.1/laura", $content['repositories'][2]["url"]);
+        $this->assertEquals($repository['repository'], $content['repositories'][5]);
+    }
+    public function testShouldFailAtAddingRepositorySimple()
+    {
+        $client = $this->createClient();
+
+        $repository = array (
+            "repository" => array (
+                    "type" => "git",
+                    "url" => ".com:waldo2188/SatisDynamique.git"
+                )
+            );
+        
+        $client->request('POST', '/repository', $repository);
+                
+        $this->assertEquals('"The URL :.com:waldo2188\/SatisDynamique.git is not a valid URL"', 
+                $client->getResponse()->getContent());
     }
     
-    public function testShouldFailAtPostRepository()
+    public function testShouldAddRepositoryFactory()
+    {
+        $client = $this->createClient();
+
+        $repository = array (
+            "repository" => array (
+                    "type" => "package",
+                    "package" => array (
+                            "name" => "waldo2188/SatisDynamique",
+                            "version" => "~0.1",
+                            "source" => array (
+                                    "url" => "git@github.com:waldo2188/SatisDynamique.git",
+                                    "type" => "git",
+                                    "reference" => "master"
+                                ),
+                            "dist" => array (
+                                "url" => "git@github.com:waldo2188/SatisDynamique.git",
+                                "type" => "git"
+                                )
+                    )
+                )
+            );
+        
+        $client->request('POST', '/repository', $repository);
+        
+        $client->request('GET', '/repositories');
+        $content = json_decode($client->getResponse()->getContent(), true);
+        
+        
+        $this->assertEquals($repository['repository'], $content['repositories'][5]);
+    }
+    
+    public function testShouldUpdateRepository()
+    {
+        $client = $this->createClient();
+
+        $repository = array (
+            "repository" => array (
+                    "type" => " package ",
+                    "package" => array (
+                            "name" => " jquery/jquery",
+                            "version" => "5.5.5   ",
+                            "source" => array (
+                                    "url" => " https://github.com/jquery/jqueryxxx.git",
+                                    "type" => " git",
+                                    "reference" => "master "
+                                ),
+                            "dist" => array (
+                                "url" => " ",
+                                "type" => ""
+                                )
+                    )
+                )
+            );
+        
+        $repositoryExpected = array (
+            "repository" => array (
+                    "type" => "package",
+                    "package" => array (
+                            "name" => "jquery/jquery",
+                            "version" => "5.5.5",
+                            "source" => array (
+                                    "url" => "https://github.com/jquery/jqueryxxx.git",
+                                    "type" => "git",
+                                    "reference" => "master"
+                                ),
+                            "dist" => array (
+                                "url" => "",
+                                "type" => ""
+                                )
+                    )
+                )
+            );
+        
+        $client->request('POST', '/repository', $repository);
+
+        $client->request('GET', '/repositories');
+        $content = json_decode($client->getResponse()->getContent(), true);
+        
+        $this->assertEquals($repositoryExpected['repository'], $content['repositories'][2]);
+    }
+    
+    public function testShouldFailAtPostRepositoryPackage()
     {
         $client = $this->createClient();
         
-        $client->request('POST', '/repository', array('type' => "git", "url" => "https://github.com/wtfred/AliDatatableBundle.git"));
+        $client->request('POST', '/repository', array("repository" => array ('type' => "package", "url" => "https://github.com/wtfred/AliDatatableBundle.git")));
         
+        $errorExpected = '"JSON does not validate. Violations:\n[package] is missing and it is required\n[] The property url is not defined and the definition does not allow additional properties\n"';
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
-        $this->assertEquals('"This repository already exist https:\/\/github.com\/wtfred\/AliDatatableBundle.git"', $client->getResponse()->getContent());
+        $this->assertEquals($errorExpected, $client->getResponse()->getContent());
     }
     
-    public function testShouldDeleteRepository()
+    public function testShouldDeleteRepositorySimple()
     {
         $client = $this->createClient();
         
-        $client->request('DELETE', '/repository', array('type' => "composer", "url" => "https://packagist.org"));
+        $repositoryExpected = array (
+            "repository" => array (
+                    "type" => "git",
+                    "url" => "https://github.com/wtfred/AliDatatableBundle.git"
+                )
+            );
+        
+        $client->request('DELETE', '/repository?repository=' . json_encode($repositoryExpected));
+        
+        $client->request('GET', '/repositories');
+        $content = json_decode($client->getResponse()->getContent(), true);
+
+        $this->assertFalse(isset($content[1]["type"]));
+    }
+    
+    public function testShouldDeleteRepositoryPackage()
+    {
+        $client = $this->createClient();
+        
+        $repositoryExpected = array (
+            "repository" => array (
+                    "type" => "package",
+                    "package" => array (
+                            "name" => "jquery/jquery",
+                            "version" => "2.0.3",
+                            "source" => array (
+                                    "url" => "https://github.com/jquery/jquery.git",
+                                    "type" => "git",
+                                    "reference" => "master"
+                                )
+                    )
+                )
+            );
+        
+        $client->request('DELETE', '/repository?repository=' . json_encode($repositoryExpected));
         
         $client->request('GET', '/repositories');
         $content = json_decode($client->getResponse()->getContent(), true);
@@ -175,12 +308,41 @@ class SatisManagerTest extends WebTestCase
         $this->assertFalse(isset($content[2]["type"]));
     }
     
-    public function testShouldNotDeleteRepository()
+    public function testShouldNotDeleteRepositoryPackage()
     {
         $client = $this->createClient();
         
-        $client->request('DELETE', '/repository', array('type' => "git", "url" => "https://dumber.org"));
+        $repositoryExpected = array (
+            "repository" => array (
+                    "type" => "package",
+                    "package" => array (
+                            "name" => "jquery/jquery",
+                            "version" => "2.0.3",
+                            "source" => array (
+                                    "url" => "https://github.qsdqsdcom/jquery/jquery.git",
+                                    "type" => "git",
+                                    "reference" => "master"
+                                )
+                    )
+                )
+            );
         
+        $client->request('DELETE', '/repository?repository=' . json_encode($repositoryExpected));
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
+    }
+    
+    public function testShouldNotDeleteRepositorySimple()
+    {
+        $client = $this->createClient();
+        
+        $repositoryExpected = array (
+            "repository" => array (
+                    "type" => "git",
+                    "url" => "https://github.com/wtfrqsded/AliDatatableBundle.git"
+                )
+            );
+        
+        $client->request('DELETE', '/repository?repository=' . json_encode($repositoryExpected));
         $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }
 }

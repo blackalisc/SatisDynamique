@@ -8,3 +8,5 @@
 /config.php
 /composer.phar
 /temp/*
+/test/SatisDynamique/temp/*
+/SatisDynamique/Needs/config.php

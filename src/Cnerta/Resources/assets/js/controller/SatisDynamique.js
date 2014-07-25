@@ -1,5 +1,5 @@
 app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
-    
+        
     $scope.packages = [];
     $scope.repositories = [];
     $scope.alerts = [];
@@ -33,7 +33,8 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         
     $scope.updatePackage = function(newPackage, oldPackage) {
         
-        if(oldPackage.name == "" && oldPackage.version == "") {
+        if(newPackage.hasOwnProperty("isNew") && newPackage.isNew == true) {
+            delete newPackage['isNew'];
             var package = {package:newPackage};
         } else {
             var package = {package:{old:oldPackage, new:newPackage}};
@@ -54,7 +55,8 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     $scope.addNewPackage = function() {
         $scope.inserted = {
             name: '',
-            version: ''
+            version: '',
+            isNew: 'true'
         };
         $scope.packages.unshift($scope.inserted);        
     };
@@ -78,48 +80,68 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
             if(index != undefined) {
                 $scope.packages.splice(index, 1);
                 
-                SatisDynamique.postPakage().remove({package:package})
-                .$promise.then(function(p){
-                    $scope.alerts.push({type:'success', msg:'The package have been well removed'});
+                if(!package.hasOwnProperty("isNew") || package.isNew == false) {
+                    SatisDynamique.postPakage().remove({package:package})
+                    .$promise.then(function(p){
+                        $scope.alerts.push({type:'success', msg:'The package have been well removed'});
+                        return true;
+                    }, function(data, status, headers, config) {                    
+                        $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
+                        return false;
+                    });
+                }
+            }
+        });
+    };
+    
+    $scope.updateRepository = function(newRepository, oldRepository) {     
+        
+        newRepository = app.recomposeJsonFromFlat(newRepository);
+                
+        if(newRepository.hasOwnProperty("isNew") && newRepository.isNew == true) {
+            delete newRepository['isNew'];
+            var package = {repository:newRepository};
+        } else {
+            var package = {repository:{old:oldRepository, new:newRepository}};
+        }        
+        return SatisDynamique.postRepository()
+                .save(package)
+                .$promise.then(function(){
+                    $scope.alerts.push({type:'success', msg:'The repository have been well saved'});
+                    $scope.loadRepositories();
                     return true;
                 }, function(data, status, headers, config) {                    
                     $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
                     return false;
                 });
-                
-            }
-        });
+        ;
     };
     
-        
-    $scope.updateRepository = function(newRepository, oldRepository) {
-        
-//        if(oldPackage.name == "" && oldPackage.version == "") {
-//            var package = {package:newPackage};
-//        } else {
-//            var package = {package:{old:oldPackage, new:newPackage}};
-//        }
-//        
-//        return SatisDynamique.postPakage()
-//                .save(package)
-//                .$promise.then(function(){
-//                    $scope.alerts.push({type:'success', msg:'The package have been well saved'});
-//                    $scope.loadPackage();
-//                    return true;
-//                }, function(data, status, headers, config) {                    
-//                    $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
-//                    return false;
-//                });
-//        ;
+    $scope.cancelRepository = function(repository) {
+        if(repository.hasOwnProperty("rollback")) {
+           repository.rollback();
+           delete repository["rollback"];
+        }
     };
     
     $scope.addNewRepository = function() {
         $scope.repositoryInserted = {
             type: 'git',
-            url: ''
+            url: '',
+            isNew: 'true'
         };
         $scope.repositories.unshift($scope.repositoryInserted);        
     };
+    
+    $scope.changeRepositoryType = function ($data, repository)
+    {
+        oldRepositoryType = repository.type;
+        repository.rollback = function() {
+            repository.type = oldRepositoryType;
+        }
+        
+        repository.type = $data;
+    }
     
     $scope.closeAlert = function(index) {
         $scope.alerts.splice(index, 1);

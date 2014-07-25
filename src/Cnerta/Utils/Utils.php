@@ -22,5 +22,4 @@ class Utils
                 "https_proxy_request_fulluri" => $config['server_proxy_request_fulluri'] ? $config['server_proxy_request_fulluri'] : true);
         }
     }
-
 }
