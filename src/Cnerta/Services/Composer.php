@@ -3,6 +3,7 @@
 namespace Cnerta\Services;
 
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File;
 use Symfony\Component\Process\Process;
 
 /**
@@ -26,8 +27,22 @@ class Composer {
                 $process->setEnv($this->config["process_env"]);
             }
             $process->run();
+            
+            return;
         }
-        // TODO if composer.jar is older than one day, do a composer selfupdate
+        
+        $composerFile = new \SplFileInfo($this->config['composer_cache_path'] . "/composer.phar");
+        $date = new \DateTime();
+        $date->setTimestamp($composerFile->getMTime());
+        $date->add("P1D");
+        
+        if($date < new \DateTime()) {
+            $process = new Process(sprintf("cd %s &&  php composer.phar selfupdate", $this->config['composer_cache_path']));
+            if(isset($this->config["process_env"])) {
+                $process->setEnv($this->config["process_env"]);
+            }
+            $process->run();
+        }
     }
 
     public function readComposerFile() {

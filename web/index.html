@@ -58,7 +58,7 @@
                         </form>
                             <div class="col-md-2" ng-hide="repoform.$visible">
                                 <button class="btn btn-primary" ng-click="repoform.$show()">edit</button>
-                                <button title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
+                                <button title="Remove" class="btn btn-warning" ng-click="remove($index, repository, 'repository')"><i class="glyphicon glyphicon-remove"></i></button>
                             </div>
                         
 
@@ -84,7 +84,7 @@
                                 </div>
                                 <div class="col-md-2" ng-hide="rowform.$visible">
                                     <button type="button" class="btn btn-primary" ng-click="rowform.$show()">edit</button>
-                                    <button type="button" title="Remove" class="btn btn-warning" ng-click="remove($index, package)"><i class="glyphicon glyphicon-remove"></i></button>
+                                    <button type="button" title="Remove" class="btn btn-warning" ng-click="remove($index, package, 'package')"><i class="glyphicon glyphicon-remove"></i></button>
                                 </div>
                             </form>
                         </div>
@@ -102,7 +102,7 @@
             <h3 class="modal-title">Remove : Are you sure ?</h3>
             </div>
             <div class="modal-body">
-            Did you really, really want to remove this "{{ item.name }}" ?
+            Did you really, really want to remove this "{{ item.name || item.url || item.package.name }}" ?
             </div>
             <div class="modal-footer">
             <button class="btn btn-primary" ng-click="ok()">Yes, I want</button>

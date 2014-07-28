@@ -25,7 +25,6 @@ class SatisController
 
         if (array_key_exists("old", $package)) {
             $package = $package['new'];
-            // TODO check if we must or not, delete the old package
         }
 
         try {
@@ -73,10 +72,10 @@ class SatisController
         $repository = $request->request->get("repository");
         
         if (array_key_exists("old", $repository)) {
-            $repository = $repository['new'];
-            // TODO check if we must or not, delete the old repository
+            $app['sd.service.satis.manager']->removeRepository($repository['old']);
+            $repository = $repository['new']['repository'];
         }
-        
+
         try {
             return new JsonResponse($app['sd.service.satis.manager']->addRepository($repository), Response::HTTP_CREATED);
         } catch (\Exception $e) {
@@ -91,7 +90,7 @@ class SatisController
         $repository = json_decode($request->query->get("repository"), true);
 
         try {
-            return new JsonResponse($app['sd.service.satis.manager']->removeRepository($repository['repository']), Response::HTTP_CREATED);
+            return new JsonResponse($app['sd.service.satis.manager']->removeRepository($repository), Response::HTTP_CREATED);
         } catch (NotFoundHttpException $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {

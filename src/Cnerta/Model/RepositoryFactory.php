@@ -23,12 +23,14 @@ class RepositoryFactory
      * @return \Cnerta\Model\RepositoryInterface
      */
     public function getManager($repository)
-    {
-        if ($repository['type'] == 'package') {
+    {        
+        if ($repository["type"] == "package") {
             return new RepositoryPackage($this->config);
         } else {
             return new RepositorySimple();
         }
+        
+        throw new \Exception("Repository Factory not found for repository defined");
     }
 
 }

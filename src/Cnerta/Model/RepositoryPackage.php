@@ -22,18 +22,22 @@ class RepositoryPackage implements RepositoryInterface
 
     public function addRepository($repository, &$ripositoryList)
     {
+        $this->removeUselessPart($repository);
+        
         if ($this->checkRepositorySchema($repository)) {
-
+            
             if (!UrlValidator::validate($repository['package']['source']['url'])) {
                 throw new \BadMethodCallException(sprintf("The URL :%s is not a valid URL", $repository['package']['source']['url']));
             }
-            if ($repository['package']['dist']['url'] != "") {
-                if (!UrlValidator::validate($repository['package']['dist']['url'])) {
-                    throw new \BadMethodCallException(sprintf("The URL :%s is not a valid URL", $repository['package']['dist']['url']));
-                }
-                if (!in_array($repository['package']['dist']['type'], $this->packageType)) {
-                    throw new \BadMethodCallException(
-                    sprintf("The type of dist :%s is not a valid type, only : %s", $repository['package']['dist']['type'], implode(', ', $this->packageType)));
+            if (array_key_exists("dist", $repository['package'])) {
+                if ($repository['package']['dist']['url'] != "") {
+                    if (!UrlValidator::validate($repository['package']['dist']['url'])) {
+                        throw new \BadMethodCallException(sprintf("The URL :%s is not a valid URL", $repository['package']['dist']['url']));
+                    }
+                    if (!in_array($repository['package']['dist']['type'], $this->packageType)) {
+                        throw new \BadMethodCallException(
+                        sprintf("The type of dist :%s is not a valid type, only : %s", $repository['package']['dist']['type'], implode(', ', $this->packageType)));
+                    }
                 }
             }
 
@@ -94,7 +98,23 @@ class RepositoryPackage implements RepositoryInterface
             throw new \Exception($errors);
         }
 
+
         return true;
+    }
+    
+    private function removeUselessPart(&$repository) 
+    {
+        if (array_key_exists("package", $repository)) {
+            if($repository['package']['dist'] == "" || count($repository['package']['dist']) == 0) {
+                unset($repository['package']['dist']);
+                return;
+            }
+
+            if($repository['package']['dist']['url'] == "" && $repository['package']['dist']['type'] == "") {
+                unset($repository['package']['dist']);
+                return;
+            }
+        }
     }
 
 }

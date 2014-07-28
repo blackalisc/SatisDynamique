@@ -10,7 +10,6 @@
         },
         "package": {
             "type": "object",
-            "required": true,
             "additionalProperties": false,
             "properties": {
                 "name": {

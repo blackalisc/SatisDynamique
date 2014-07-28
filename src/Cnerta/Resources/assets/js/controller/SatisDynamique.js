@@ -61,7 +61,7 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         $scope.packages.unshift($scope.inserted);        
     };
 
-    $scope.remove = function(index, package) {
+    $scope.remove = function(index, item, type) {
 
         var modalInstance = $modal.open({
             templateUrl: 'removeModal.html',
@@ -70,18 +70,30 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
                 index: function() {
                     return index;
                 },
-                package: function() {
-                    return package;
+                item: function() {
+                    return item;
+                },
+                type: function() {
+                    return type;
                 }
             }
         });
 
         modalInstance.result.then(function(index) {
             if(index != undefined) {
-                $scope.packages.splice(index, 1);
                 
-                if(!package.hasOwnProperty("isNew") || package.isNew == false) {
-                    SatisDynamique.postPakage().remove({package:package})
+                if(type == "package") {
+                    $scope.packages.splice(index, 1);
+                    var requestProvider = SatisDynamique.postPakage();
+                    var data = {package:item};
+                } else if (type == "repository") {
+                    $scope.repositories.splice(index, 1);
+                    var requestProvider = SatisDynamique.postRepository();
+                    var data = {repository:item};
+                }
+                
+                if(!item.hasOwnProperty("isNew") || item.isNew == false) {
+                    requestProvider.remove(data)
                     .$promise.then(function(p){
                         $scope.alerts.push({type:'success', msg:'The package have been well removed'});
                         return true;
@@ -148,9 +160,9 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     };
 });
 
-var ModalInstanceCtrl = function($scope, $modalInstance, index, package) {
+var ModalInstanceCtrl = function($scope, $modalInstance, index, item) {
 
-    $scope.item = package;
+    $scope.item = item;
 
     $scope.ok = function() {
         $modalInstance.close(index);
