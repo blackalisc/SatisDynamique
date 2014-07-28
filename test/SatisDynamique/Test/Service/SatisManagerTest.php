@@ -29,7 +29,7 @@ class SatisManagerTest extends WebTestCase
     
     public function createApplication()
     {
-        require   __DIR__ .  "/../../Needs/config.php";
+        require   __DIR__ .  "/../../Needs/config.dist.php";
         Cnerta\Utils\Utils::setUpPorxyConfig($config);
         
         // Silex

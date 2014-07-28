@@ -10,3 +10,7 @@ $config = array(
     "server_proxy_ip" => null,
     "server_proxy_request_fulluri" => null
 );
+
+if(is_file(__DIR__ . "/config.php")) {
+    require __DIR__ . "/config.php";
+}
