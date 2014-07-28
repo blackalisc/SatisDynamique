@@ -22,8 +22,12 @@ class Composer {
         $fs = new Filesystem();
         if(!$fs->exists($this->config['composer_cache_path'] . "/composer.phar")) {
             $process = new Process(sprintf("cd %s && curl -sS https://getcomposer.org/installer | php", $this->config['composer_cache_path']));
+            if(isset($this->config["process_env"])) {
+                $process->setEnv($this->config["process_env"]);
+            }
             $process->run();
         }
+        // TODO if composer.jar is older than one day, do a composer selfupdate
     }
 
     public function readComposerFile() {
@@ -62,7 +66,12 @@ class Composer {
         $this->mkdirComposerFolder();
                 
         $process = new Process(sprintf("cd %s && php composer.phar show --name-only %s %s", $this->config['composer_cache_path'], $packageName, $version));
-        $process->setEnv(array("COMPOSER_HOME" => $this->config['composer_cache_path'] . "/.composer"));
+        
+        $envArray = array("COMPOSER_HOME" => $this->config['composer_cache_path'] . "/.composer");
+        if(isset($this->config["process_env"])) {
+            $envArray = array_merge($envArray, $this->config["process_env"]);
+        }
+        $process->setEnv($envArray);
         $process->run();
 
         if($process->isSuccessful()) {

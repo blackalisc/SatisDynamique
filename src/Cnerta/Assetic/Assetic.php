@@ -49,6 +49,16 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
             return $fm;
         })
     );
+    
+    $finder = new Symfony\Component\Finder\Finder();
+    $finder->files()->in($app['assetic.path_to_cache']);
+    
+    if($finder->count() >= 10 ) {
+        $fs = new \Symfony\Component\Filesystem\Filesystem;
+        foreach ($finder as $file) {
+            $fs->remove($file->getRealpath());
+        }
+    }
 
     $app['assetic.asset_manager'] = $app->share(
         $app->extend('assetic.asset_manager', function ($am, $app) {

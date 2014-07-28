@@ -10,6 +10,46 @@
         {
             "type":"git",
             "url":"https://github.com/wtfred/AliDatatableBundle.git"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "jquery/jquery",
+                "version": "2.0.3",
+                "source": {
+                    "url": "https://github.com/jquery/jquery.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "xing/wysihtml5",
+                "version": "0.3.0",
+                "source": {
+                    "url": "https://github.com/xing/wysihtml5.git",
+                    "type": "git",
+                    "reference": "0.3.0"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "version": "3.0.1",
+                "name": "twitter/bootstrap",
+                "source": {
+                    "url": "https://github.com/twitter/bootstrap.git",
+                    "type": "git",
+                    "reference": "master"
+                },
+                "dist": {
+                    "url": "https://github.com/twitter/bootstrap/zipball/master",
+                    "type": "zip"
+                }
+            }
         }
     ],
     

@@ -1,0 +1,53 @@
+{
+    "name": "repository",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "type": {
+            "type": "string",
+            "pattern": "(package|git|vcs|hg|composer)",
+            "required": true
+        },
+        "package": {
+            "type": "object",
+            "required": true,
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string",
+                            "pattern": "[package|git|vcs|hg|composer]"
+                        },
+                        "reference": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "dist": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "url": {
+                            "type": "string"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
