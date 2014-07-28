@@ -19,10 +19,13 @@ class Composer {
         $this->config['composer_cache_path'] = $config['temp_path'] . "/composer";
     }
 
-    public function getComposer() {
+    public function getComposer($composer_path = null) {
+        
+        $composerFilePath = $composer_path ? $composer_path : $this->config['composer_cache_path'];
+        
         $fs = new Filesystem();
-        if(!$fs->exists($this->config['composer_cache_path'] . "/composer.phar")) {
-            $process = new Process(sprintf("cd %s && curl -sS https://getcomposer.org/installer | php", $this->config['composer_cache_path']));
+        if(!$fs->exists($composerFilePath . "/composer.phar")) {
+            $process = new Process(sprintf("cd %s && curl -sS https://getcomposer.org/installer | php", $composerFilePath));
             if(isset($this->config["process_env"])) {
                 $process->setEnv($this->config["process_env"]);
             }
@@ -31,13 +34,13 @@ class Composer {
             return;
         }
         
-        $composerFile = new \SplFileInfo($this->config['composer_cache_path'] . "/composer.phar");
+        $composerFile = new \SplFileInfo($composerFilePath . "/composer.phar");
         $date = new \DateTime();
         $date->setTimestamp($composerFile->getMTime());
-        $date->add("P1D");
+        $date->add(new \DateInterval("P1D"));
         
         if($date < new \DateTime()) {
-            $process = new Process(sprintf("cd %s &&  php composer.phar selfupdate", $this->config['composer_cache_path']));
+            $process = new Process(sprintf("cd %s &&  php composer.phar selfupdate", $composerFilePath));
             if(isset($this->config["process_env"])) {
                 $process->setEnv($this->config["process_env"]);
             }

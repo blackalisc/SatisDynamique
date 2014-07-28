@@ -18,8 +18,9 @@ class RepositorySimple implements RepositoryInterface
     {
     }
 
-    public function addRepository($repository, &$ripositoryList)
+    public function addRepository($repository, &$ripositoryList, $repositoryToUpdate = null)
     {
+        $repositoryToUpdate = $repositoryToUpdate ? serialize($repositoryToUpdate) : null;
         
         if (!UrlValidator::validate($repository['url'])) {
             throw new \BadMethodCallException(sprintf("The URL :%s is not a valid URL", $repository['url']));
@@ -30,7 +31,18 @@ class RepositorySimple implements RepositoryInterface
             sprintf("The type :%s is not a valid type, only : %s", $repository['type'], implode(', ', $this->packageType)));
         }
 
-        $ripositoryList[] = $repository;
+        $isRepositoryDefined = false;
+        
+        foreach ($ripositoryList as $key => $repo) {
+            if ($repositoryToUpdate != null && $repositoryToUpdate == serialize($repo)) {
+                $ripositoryList[$key] = $repository;
+                $isRepositoryDefined = true;
+            }
+        }
+        
+        if ($isRepositoryDefined == false) {
+            $ripositoryList[] = $repository;
+        }
     }
 
     public function deleteRepository($repository, &$ripositoryList)

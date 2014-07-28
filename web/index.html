@@ -26,7 +26,7 @@
                     <h2>Repository &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewRepository();"><i class="glyphicon glyphicon-plus"></i></button></h2>
                     
                     <div ng-repeat="repository in repositories" class="repository row">
-                        <form editable-form name="repoform" onbeforesave="updateRepository($data, repository)" oncancel="cancelRepository(repository)" shown="repositoryInserted == repository" class="form-buttons form-inline">
+                        <form editable-form name="repoform" ng-init="oldRepo = detach(repository);" onbeforesave="updateRepository($data, oldRepo)" oncancel="cancelRepository(repository)" shown="repositoryInserted == repository" class="form-buttons form-inline">
                             <div class="col-md-10" ng-if="repository.type == 'git' || repository.type == 'vcs' || repository.type == 'hg' || repository.type == 'composer'">
                                 <a href="#" e-name="repository.type" editable-select="repository.type" e-ng-options="s.value as s.text for s in repositoryType" title="Click to edit" ng-click="repoform.$show()" e-ng-change="changeRepositoryType($data, repository)">{{ repository.type }}</a>
                                 <a href="#" e-name="repository.url" editable-text="repository.url" title="Click to edit" ng-click="repoform.$show()">{{ repository.url }}</a>
@@ -71,7 +71,7 @@
                         <h2>Packages &nbsp;&nbsp;&nbsp;<button class="btn btn-success" ng-click="addNewPackage();"><i class="glyphicon glyphicon-plus"></i></button></h2>
 
                         <div ng-repeat="package in packages" class="row">
-                            <form editable-form name="rowform" onbeforesave="updatePackage($data, package)" shown="inserted == package" class="form-buttons form-inline">
+                            <form editable-form name="rowform" ng-init="oldPackage = detach(package);"  onbeforesave="updatePackage($data, oldPackage)" shown="inserted == package" class="form-buttons form-inline">
                                 <div class="col-md-5">
                                     <a href="#" title="Click to edit" ng-click="rowform.$show()" editable-text="package.name" e-name="name" e-required>{{ package.name }}</a>
                                 </div>

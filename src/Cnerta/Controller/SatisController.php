@@ -71,13 +71,14 @@ class SatisController
     {
         $repository = $request->request->get("repository");
         
-        if (array_key_exists("old", $repository)) {
-            $app['sd.service.satis.manager']->removeRepository($repository['old']);
-            $repository = $repository['new']['repository'];
-        }
-
         try {
-            return new JsonResponse($app['sd.service.satis.manager']->addRepository($repository), Response::HTTP_CREATED);
+            if (array_key_exists("old", $repository)) {
+                $response = $app['sd.service.satis.manager']->addRepository($repository['new'], $repository['old']);
+            } else {
+                $response = $app['sd.service.satis.manager']->addRepository($repository);
+            }
+
+            return new JsonResponse($response, Response::HTTP_CREATED);
         } catch (\Exception $e) {
             return new JsonResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }

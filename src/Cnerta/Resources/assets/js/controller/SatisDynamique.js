@@ -30,7 +30,12 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     
     $scope.loadPackage();
     $scope.loadRepositories();
-        
+    
+    $scope.detach = function(obj)
+    {   
+        return angular.copy(obj);
+    }
+    
     $scope.updatePackage = function(newPackage, oldPackage) {
         
         if(newPackage.hasOwnProperty("isNew") && newPackage.isNew == true) {
@@ -112,10 +117,11 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
                 
         if(newRepository.hasOwnProperty("isNew") && newRepository.isNew == true) {
             delete newRepository['isNew'];
-            var package = {repository:newRepository};
+            var package = newRepository;
         } else {
-            var package = {repository:{old:oldRepository, new:newRepository}};
-        }        
+            var package = {repository:{old:oldRepository, new:newRepository.repository}};
+        }       
+        
         return SatisDynamique.postRepository()
                 .save(package)
                 .$promise.then(function(){

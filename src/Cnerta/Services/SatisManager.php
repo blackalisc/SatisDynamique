@@ -99,7 +99,7 @@ class SatisManager
         return "ok";
     }
     
-    public function addRepository($repository)
+    public function addRepository($repository, $repositoryToUpdate = null)
     {
         $this->cleanEntry($repository);
 
@@ -109,12 +109,13 @@ class SatisManager
 
         $repoFactory
                 ->getManager($repository)
-                ->addRepository($repository, $this->satisConfig['repositories']);
+                ->addRepository($repository, $this->satisConfig['repositories'], $repositoryToUpdate);
 
         $this->composer->writeSatisConf($this->satisConfig);
 
         return "ok";
     }
+
 
     public function removeRepository($repository)
     {

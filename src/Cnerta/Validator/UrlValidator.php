@@ -22,7 +22,10 @@ class UrlValidator
         $isUrlValid |= filter_var($url, FILTER_VALIDATE_URL);
         
         $isUrlValid |= (boolean) preg_match('#^(?:(?:https?|git)://github\.com/|git@github\.com:)([^/]+)/(.+?)(?:\.git)?$#', $url);
-
+        
+        $isUrlValid |= $url == "https://packagist.org";
+        $isUrlValid |= $url == "https://www.packagist.org";
+        
         return (boolean) $isUrlValid;
     }
 }

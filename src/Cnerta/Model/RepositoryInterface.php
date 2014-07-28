@@ -8,13 +8,12 @@ namespace Cnerta\Model;
 interface RepositoryInterface {
     
     /**
-     * Add or replace a repository in the list
+     * Add or update a repository in the list
      * 
      * @param array $repository
      * @param array $ripositoryList
      */
-    public function addRepository($repository, &$ripositoryList);
-    
+    public function addRepository($repository, &$ripositoryList, $repositoryToUpdate = null);
     
     /**
      * Delete a repository in the repository list

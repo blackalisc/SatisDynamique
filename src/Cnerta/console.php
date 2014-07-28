@@ -9,38 +9,33 @@ use Symfony\Component\Finder\Finder;
 
 $console = new Application('Satis Dynamique', '0.1');
 
+require __DIR__ . "/Services/ServiceRegistration.php";
+
 $app->boot();
 
 $console
-    ->register('assetic:dump')
-    ->setDescription('Dumps all assets to the filesystem')
+    ->register('statis:update')
+    ->setDescription('Update Satis')
     ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
-        if (!$app['assetic.enabled']) {
-            return false;
-        }
-
-        $dumper = $app['assetic.dumper'];
-
-        $dumper->dumpAssets();
-        $output->writeln('<info>Dump finished</info>');
+        
+        $output->writeln("Start Satis update");
+        
+        $app['sd.service.satis.updater']->updateSatis($output);
+        
+        $output->writeln("End Satis update");
     })
 ;
-
-if (isset($app['cache.path'])) {
-    $console
-        ->register('cache:clear')
-        ->setDescription('Clears the cache')
-        ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
-
-            $cacheDir = $app['cache.path'];
-            $finder = Finder::create()->in($cacheDir)->notName('.gitkeep');
-
-            $filesystem = new Filesystem();
-            $filesystem->remove($finder);
-
-            $output->writeln(sprintf("%s <info>success</info>", 'cache:clear'));
-        });
-}
-
+$console
+    ->register('statis:repositories:update')
+    ->setDescription('Update Satis repositories')
+    ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
+        
+        $output->writeln("Start Satis repositories update");
+        
+        $app['sd.service.satis.updater']->updateRepositoriesSatis($output);
+        
+        $output->writeln("End Satis repositories update");
+    })
+;
 
 return $console;

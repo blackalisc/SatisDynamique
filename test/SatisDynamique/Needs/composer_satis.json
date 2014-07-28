@@ -1,6 +1,6 @@
 {
     "name": "Cnerta Composer Mirror",
-    
+    "homepage": "http://localhost:4680",
     "repositories":
     [
         {

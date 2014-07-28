@@ -20,8 +20,10 @@ class RepositoryPackage implements RepositoryInterface
         $this->config = $config;
     }
 
-    public function addRepository($repository, &$ripositoryList)
+    public function addRepository($repository, &$ripositoryList, $repositoryToUpdate = null)
     {
+        $repositoryToUpdate = $repositoryToUpdate ? serialize($repositoryToUpdate) : null;
+        
         $this->removeUselessPart($repository);
         
         if ($this->checkRepositorySchema($repository)) {
@@ -44,7 +46,12 @@ class RepositoryPackage implements RepositoryInterface
             $isRepositoryDefined = false;
             foreach ($ripositoryList as $key => $repo) {
 
-                if ($repo['type'] == $repository['type'] && $repo['package']['name'] == $repository['package']['name']) {
+                if (
+                        ($repo['type'] == $repository['type'] 
+                        && $repo['package']['name'] == $repository['package']['name'])
+                        ||
+                        ($repositoryToUpdate != null && $repositoryToUpdate == serialize($repo))
+                        ) {
                     $ripositoryList[$key] = $repository;
                     $isRepositoryDefined = true;
                 }
@@ -55,7 +62,7 @@ class RepositoryPackage implements RepositoryInterface
             }
         }
     }
-
+    
     public function deleteRepository($repository, &$ripositoryList)
     {
         $isDeleted = false;
