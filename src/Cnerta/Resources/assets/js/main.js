@@ -1,4 +1,4 @@
-var app = angular.module('satisdynamique', ['ngResource', 'ui.bootstrap', 'xeditable']);
+var app = angular.module('satisdynamique', ['ngResource', 'ngSanitize', 'ui.bootstrap', 'xeditable']);
 
 app.run(function(editableOptions) {
   editableOptions.theme = 'bs3';
@@ -9,6 +9,9 @@ app.factory('SatisDynamique', ['$resource',
         var myService = {
         allPakage: function() {
             return $resource('http://localhost/SatisDynamique/pakages');
+        },
+        allPakagesInformations: function() {
+            return $resource('http://localhost/SatisDynamique/satis-packages-informations');
         },
         postPakage: function() {
             return $resource('http://localhost/SatisDynamique/pakage');

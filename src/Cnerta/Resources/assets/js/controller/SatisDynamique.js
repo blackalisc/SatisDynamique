@@ -1,7 +1,8 @@
-app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
+app.controller('SatisDynamiqueCtrl', function($scope, $http, $modal, SatisDynamique) {
         
     $scope.packages = [];
     $scope.repositories = [];
+    $scope.allPackagesInformations = "";
     $scope.alerts = [];
     $scope.repositoryType = [
         {value: "package", text: 'package'},
@@ -10,6 +11,7 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         {value: 'hg', text: 'hg'},
         {value: 'composer', text: 'composer'}
     ];
+    
     $scope.repositoryInserted = [];
     
     $scope.loadPackage = function() {
@@ -18,7 +20,7 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         },function(data, status, headers, config) {
             $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
         });
-    }
+    };
     
     $scope.loadRepositories = function() {
         SatisDynamique.allRepositories().get().$promise.then(function(p){
@@ -26,7 +28,7 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         },function(data, status, headers, config) {
             $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
         });
-    }
+    };
     
     $scope.loadPackage();
     $scope.loadRepositories();
@@ -34,7 +36,7 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
     $scope.detach = function(obj)
     {   
         return angular.copy(obj);
-    }
+    };
     
     $scope.updatePackage = function(newPackage, oldPackage) {
         
@@ -159,10 +161,20 @@ app.controller('SatisDynamiqueCtrl', function($scope, $modal, SatisDynamique) {
         }
         
         repository.type = $data;
-    }
+    };
     
     $scope.closeAlert = function(index) {
         $scope.alerts.splice(index, 1);
+    };
+    
+    $scope.retriveAllPackagesInfos = function()
+    {
+        SatisDynamique.allPakagesInformations().get().$promise.then(
+                function(data, status, headers, config){
+                    $scope.allPackagesInformations = data.all;
+        },function(data, status, headers, config) {
+            $scope.alerts.push({type:'danger', msg:angular.fromJson(data.data)});
+        });
     };
 });
 

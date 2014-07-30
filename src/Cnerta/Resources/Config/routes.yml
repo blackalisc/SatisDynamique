@@ -2,6 +2,11 @@ getHome:
     path: /
     defaults: { _controller: 'Cnerta\Controller\HomeController::getHome' }
     methods:  [GET]
+
+getAllPackagesInfos:
+    path: /satis-packages-informations
+    defaults: { _controller: 'Cnerta\Controller\SatisController::getAllPackagesInformations' }
+    methods:  [GET]
     
 getAllPakage:
     path: /pakages

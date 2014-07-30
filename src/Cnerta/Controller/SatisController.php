@@ -100,4 +100,9 @@ class SatisController
         
         return new JsonResponse("We don't understand your request.", Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+    
+    public function getAllPackagesInformations(Application $app, Request $request)
+    {
+        return new JsonResponse(array("all" => $app['sd.service.satis.manager']->getAllPackagesInformationsHTML()));
+    }
 }

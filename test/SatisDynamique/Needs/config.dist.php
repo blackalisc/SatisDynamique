@@ -2,6 +2,7 @@
 
 $config = array(
     "base_path" => __DIR__ . "/../../..",
+    "base_url" => "http://localhost",
     "satis_package_conf_path" => __DIR__ . "/../tmp/composer_satis.json",
     "cache_path" => __DIR__ . "/../tmp/cache",
     "temp_path" => __DIR__ . "/../temp",

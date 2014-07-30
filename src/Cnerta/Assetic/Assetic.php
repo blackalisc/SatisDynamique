@@ -21,6 +21,7 @@ $app['assetic.input.path_to_js'] = array(
     $app['root_dir'] . '/vendor/web/jquery/dist/jquery.min.js',
     $app['root_dir'] . '/vendor/web/angular/angular.js',
     $app['root_dir'] . '/vendor/web/angular-resource/angular-resource.js',
+    $app['root_dir'] . '/vendor/web/angular-sanitize/angular-sanitize.js',
     $app['root_dir'] . '/vendor/web/angular-xeditable/dist/js/xeditable.min.js',
     $app['root_dir'] . '/vendor/web/angular-bootstrap/ui-bootstrap.min.js',
     $app['root_dir'] . '/vendor/web/angular-bootstrap/ui-bootstrap-tpls.min.js',
@@ -39,7 +40,12 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
     ));
 
     $app['assetic.filter_manager'] = $app->share(
-        $app->extend('assetic.filter_manager', function ($fm, $app) {
+        $app->extend('assetic.filter_manager', function ($fm, $app) use ($config) {
+            
+            $arrayReplacement = array("http://localhost/SatisDynamique" => $config['base_url']);
+            
+            $fm->set('replace_value', new Cnerta\Assetic\ReplaceValueFilter($arrayReplacement));
+            
             $fm->set('lesscss', new \Assetic\Filter\LessFilter("/usr/bin/node", array("/usr/lib/node_modules")));
             $fm->set('yui_css', new \Assetic\Filter\Yui\CssCompressorFilter($app['root_dir'] . "/vendor/packagist/yuicompressor-bin/bin/yuicompressor.jar"));
             $fm->set('cssembed', new \Assetic\Filter\CssEmbedFilter($app['root_dir'] . "/vendor/bin/cssembed.jar"));
@@ -77,8 +83,9 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
 
             $am->set('scripts', new Assetic\Asset\AssetCache(
                 new \Assetic\Asset\GlobAsset(
-                        $app['assetic.input.path_to_js']/*,
-                        array($app['assetic.filter_manager']->get('yui_js'))*/
+                        $app['assetic.input.path_to_js'],
+                        array($app['assetic.filter_manager']->get('replace_value'))
+                        /*,array($app['assetic.filter_manager']->get('yui_js'))*/
                         ),
                 new \Assetic\Cache\FilesystemCache($app['assetic.path_to_cache'])
             ));
